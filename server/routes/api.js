@@ -4,8 +4,8 @@ let Team = require('../../app/models/team');
 const config = require('../../config');
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
-// mongoose.connect('mongodb://database/fbdb'); // this if for Docker launch
+// mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
+mongoose.connect('mongodb://database/fbdb'); // this if for Docker launch
 
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');

@@ -11,12 +11,12 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app
 
 # Install dependecies
-# RUN npm config set proxy http://proxy-chain.intel.com:911
-# RUN npm config set https-proxy http://proxy-chain.intel.com:912
-# RUN npm config set strict-ssl false
-# RUN set HTTP_PROXY=http://proxy-chain.intel.com:911
-# RUN set HTTPS_PROXY=http://proxy-chain.intel.com:912
-# RUN npm --without-ssl --insecure install
+RUN npm config set proxy http://proxy-chain.intel.com:911
+RUN npm config set https-proxy http://proxy-chain.intel.com:912
+RUN npm config set strict-ssl false
+RUN set HTTP_PROXY=http://proxy-chain.intel.com:911
+RUN set HTTPS_PROXY=http://proxy-chain.intel.com:912
+RUN npm --without-ssl --insecure install
 
 # Get all the code needed to run the app
 COPY . /usr/src/app

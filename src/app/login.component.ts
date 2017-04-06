@@ -9,18 +9,18 @@ contentHeaders.append('Content-Type', 'application/json');
 
 @Component({
   selector: 'login',
-  template: `<div class="login jumbotron center-block">
+  template: `<div>
     <h2>Login</h2>
     <form role="form" (submit)="login($event, username.value, password.value)">
-      <div class="form-group">
+      <div>
         <label for="username">Username</label>
         <input type="text" #username class="form-control" id="username" placeholder="Username">
       </div>
-      <div class="form-group">
+      <div>
         <label for="password">Password</label>
         <input type="password" #password class="form-control" id="password" placeholder="Password">
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
+      <button type="submit">Submit</button>
     </form>
   </div>`,
   styles: [ `.login {
@@ -45,11 +45,6 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('id_token', response.json().id_token);
         this.router.navigate(['teams']);
       })
-      .catch(this.handleError);
-  }
-
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error);
-    return Promise.reject(error.message || error);
+      .catch(error => alert(error.json().message));
   }
 }

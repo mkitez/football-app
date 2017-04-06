@@ -78,7 +78,6 @@ export class TeamListComponent implements OnInit {
             .deleteTeam(team.name)
             .then(() => {
                 this.teams = this.teams.filter(t => t !== team);
-                console.log(this.teams, this.teams.length);
                 if (this.selectedTeam === team) { this.selectedTeam = null; }
           });
     }
