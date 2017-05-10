@@ -1,11 +1,11 @@
 {
   "name": "football-app",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve -H 0.0.0.0",
-    "build": "ng build && node server.js",
+    "start": "node backend/server.js",
+    "build": "ng build && node backend/server.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -27,6 +27,8 @@
     "jsonwebtoken": "^7.3.0",
     "mongoose": "~3.6.13",
     "rxjs": "^5.1.0",
+    "cors": "^2.8.3",
+    "express-jwt": "^5.1.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
@@ -35,8 +37,6 @@
     "@types/jasmine": "2.5.38",
     "@types/node": "~6.0.60",
     "codelyzer": "~2.0.0",
-    "cors": "^2.8.3",
-    "express-jwt": "^5.1.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
