@@ -21,7 +21,6 @@
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
     "angular2-jwt": "^0.2.0",
-    "auth0-lock": "^10.14.0",
     "body-parser": "^1.17.1",
     "core-js": "^2.4.1",
     "express": "^4.15.2",

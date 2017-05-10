@@ -4,8 +4,8 @@ let Team = require('../../app/models/team');
 const config = require('../../config');
 
 const mongoose = require('mongoose');
-// mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
-mongoose.connect('mongodb://database/fbdb'); // this if for Docker launch
+mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
+// mongoose.connect('mongodb://database/fbdb'); // this is for Docker launch
 
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
@@ -33,13 +33,18 @@ const users = [{
 
 /* GET api listing. */
 router.get('/api', (req, res) => {
-  res.send('Welcome to football API!');
+    res.send('Welcome to football API!');
 });
 
 router.route('/api/teams')
-    .post(function(req, res) {
+    .post((req, res) => {
         if (!req.user.admin)
             return res.sendStatus(401);
+
+        Team.find((err, teams) => {
+            if (teams.length > 0 && teams[0].name === req.body.name)
+                return res.status(406).json({ message: 'Team with this name already exists' });
+        });
 
         let team = new Team();
         team.name = req.body.name;
@@ -53,44 +58,47 @@ router.route('/api/teams')
         });
 
     })
-    .get(function(req, res) {
+    .get((req, res) => {
         Team.find(function(err, teams) {
             if (err)
                 res.send(err);
 
             if (!teams.length)
-                res.json({ message: 'No teams to show.' });
+                res.json({ message: 'No teams to show' });
             else
                 res.json(teams);
         });
     });
 
 router.route('/api/teams/:team_name')
-    .get(function(req, res) {
+    .get((req, res) => {
         Team.find({
             name: req.params.team_name
         }, function(err, team) {
             if (err)
                 res.send(err);
             if (!team.length)
-                res.json({ message: 'No such team' });
+                res.status(404).json({ message: 'No such team' });
             else
                 res.json(team[0]);
         });
     })
-    .post(function(req, res) {
+    .post((req, res) => {
         if (!req.user.admin)
             return res.sendStatus(401);
 
         Team.find({
             name: req.params.team_name
-        }, function(err, team) {
-            if (!team.length)
-                res.json({ message: 'No such team' });
+        }, function(err, teams) {
+            if (!teams.length)
+                res.status(404).json({ message: 'No such team' });
             else {
-                team = team[0];
-
+                let team = teams[0];
                 let playerName = req.body.name;
+
+                if (team.players.filter(p => p.name === playerName).length > 0)
+                    return res.status(406).json({ message: 'Player with this name already exists' });
+
                 let playerId = team.players.length > 0 ? team.players[0].id + 1 : 0;
                 for (let i = 0; i < team.players.length; i++)
                     if (team.players[i].id >= playerId)
@@ -108,7 +116,7 @@ router.route('/api/teams/:team_name')
             }
         });
     })
-    .delete(function(req, res) {
+    .delete((req, res) => {
         if (!req.user.admin)
             return res.sendStatus(401);
 
@@ -123,7 +131,7 @@ router.route('/api/teams/:team_name')
     });
 
 router.route('/api/teams/:team_name/:player_id')
-    .get(function(req, res) {
+    .get((req, res) => {
         Team.find({
             name: req.params.team_name
         }, function(err, team) {
@@ -136,12 +144,12 @@ router.route('/api/teams/:team_name/:player_id')
             })[0];
 
             if (typeof player === 'undefined')
-                res.json({ message: 'No player with this ID.' });
+                res.status(404).json({ message: 'No player with this ID' });
             else
                 res.json({ id: player.id, name: player.name });
         });
     })
-    .delete(function(req, res) {
+    .delete((req, res) => {
         if (!req.user.admin)
             return res.sendStatus(401);
 
@@ -157,7 +165,7 @@ router.route('/api/teams/:team_name/:player_id')
             })[0];
 
             if (typeof player === 'undefined')
-                res.json({ message: 'No player with this ID.' });
+                res.status(404).json({ message: 'No player with this ID' });
             else {
                 let playerIdx = team.players.indexOf(player);
                 team.players.splice(playerIdx, 1);
