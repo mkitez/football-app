@@ -1,11 +1,17 @@
 const express = require('express');
 const router = express.Router();
+
 let Team = require('../models/team');
 const config = require('../config');
+const users = require('../users');
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
 // mongoose.connect('mongodb://database/fbdb'); // this is for Docker launch
+
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Failed to connect to DB.'));
+db.once('open', console.log.bind(console, 'Connection to DB established.'));
 
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
@@ -18,20 +24,6 @@ function createToken(user) {
    return jwt.sign(userToSign, config.secret, {expiresIn: 60 * 60});
 }
 
-const users = [{
-  id: 0,
-  username: 'admin',
-  password: 'admin',
-  admin: true
-},
-{
-  id: 1,
-  username: 'user',
-  password: 'user',
-  admin: false
-}];
-
-/* GET api listing. */
 router.get('/api', (req, res) => {
     res.send('Welcome to football API!');
 });
@@ -39,7 +31,7 @@ router.get('/api', (req, res) => {
 router.route('/api/teams')
     .post((req, res) => {
         if (!req.user.admin)
-            return res.sendStatus(401);
+            return res.status(401);
 
         Team.find((err, teams) => {
             if (teams.length > 0 && teams[0].name === req.body.name)
@@ -50,7 +42,7 @@ router.route('/api/teams')
         team.name = req.body.name;
         team.players = [];
 
-        team.save(function(err) {
+        team.save(err => {
             if (err)
                 res.send(err);
 
@@ -59,7 +51,7 @@ router.route('/api/teams')
 
     })
     .get((req, res) => {
-        Team.find(function(err, teams) {
+        Team.find((err, teams) => {
             if (err)
                 res.send(err);
 
@@ -74,7 +66,7 @@ router.route('/api/teams/:team_name')
     .get((req, res) => {
         Team.find({
             name: req.params.team_name
-        }, function(err, team) {
+        }, (err, team) => {
             if (err)
                 res.send(err);
             if (!team.length)
@@ -85,11 +77,11 @@ router.route('/api/teams/:team_name')
     })
     .post((req, res) => {
         if (!req.user.admin)
-            return res.sendStatus(401);
+            return res.status(401);
 
         Team.find({
             name: req.params.team_name
-        }, function(err, teams) {
+        }, (err, teams) => {
             if (!teams.length)
                 res.status(404).json({ message: 'No such team' });
             else {
@@ -100,17 +92,17 @@ router.route('/api/teams/:team_name')
                     return res.status(406).json({ message: 'Player with this name already exists' });
 
                 let playerId = team.players.length > 0 ? team.players[0].id + 1 : 0;
-                for (let i = 0; i < team.players.length; i++)
-                    if (team.players[i].id >= playerId)
-                        playerId = team.players[i].id + 1;
+                team.players.forEach(p => {
+                    if (p.id >= playerId)
+                        playerId = p.id + 1;
+                });
 
                 let newPlayer = { id: playerId, name: playerName };
                 team.players.push(newPlayer);
 
-                team.save(function(err) {
+                team.save(err => {
                     if (err)
                         res.send(err);
-
                     res.json(newPlayer);
                 });
             }
@@ -118,14 +110,13 @@ router.route('/api/teams/:team_name')
     })
     .delete((req, res) => {
         if (!req.user.admin)
-            return res.sendStatus(401);
+            return res.status(401);
 
         Team.remove({
             name: req.params.team_name
-        }, function(err, team) {
+        }, (err, team) => {
             if (err)
                 res.send(err);
-
             res.json({ message: 'Successfully deleted' });
         });
     });
@@ -134,14 +125,12 @@ router.route('/api/teams/:team_name/:player_id')
     .get((req, res) => {
         Team.find({
             name: req.params.team_name
-        }, function(err, team) {
+        }, (err, team) => {
             if (err)
                 res.send(err);
 
             let players = team[0].players;
-            let player = players.filter(function(p) {
-                return p.id === +req.params.player_id;
-            })[0];
+            let player = players.filter(p => p.id === +req.params.player_id)[0];
 
             if (typeof player === 'undefined')
                 res.status(404).json({ message: 'No player with this ID' });
@@ -151,29 +140,25 @@ router.route('/api/teams/:team_name/:player_id')
     })
     .delete((req, res) => {
         if (!req.user.admin)
-            return res.sendStatus(401);
+            return res.status(401);
 
         Team.find({
             name: req.params.team_name
-        }, function(err, team) {
+        }, (err, team) => {
             team = team[0];
             if (err)
                 res.send(err);
 
-            let player = team.players.filter(function (p) {
-              return p.id === +req.params.player_id;
-            })[0];
-
+            let player = team.players.filter(p => p.id === +req.params.player_id)[0];
             if (typeof player === 'undefined')
                 res.status(404).json({ message: 'No player with this ID' });
             else {
                 let playerIdx = team.players.indexOf(player);
                 team.players.splice(playerIdx, 1);
 
-                team.save(function(err) {
+                team.save(err => {
                     if (err)
                         res.send(err);
-
                     res.json({ message: 'Successfully deleted' });
                 });
             }
@@ -187,12 +172,8 @@ router.route('/auth')
         }
 
         let user = users.filter(u => u.username === req.body.username)[0];
-        if (typeof user === 'undefined') {
+        if (typeof user === 'undefined' || !(user.password === req.body.password)) {
             return res.status(401).json({ message: 'The username and password don\'t match' });
-        }
-
-        if (!(user.password === req.body.password)) {
-            return res.status(401).json({ message: 'The username and password don\'t match (1)' });
         }
 
         res.status(201).json({
