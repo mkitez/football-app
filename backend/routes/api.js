@@ -33,22 +33,22 @@ router.route('/api/teams')
         if (!req.user.admin)
             return res.status(401);
 
-        Team.find((err, teams) => {
-            if (teams.length > 0 && teams[0].name === req.body.name)
+        Team.find({
+            name: req.body.name
+        }, (err, teams) => {
+            if (teams.length > 0)
                 return res.status(406).json({ message: 'Team with this name already exists' });
+
+            let team = new Team();
+            team.name = req.body.name;
+            team.players = [];
+
+            team.save(err => {
+                if (err)
+                    res.send(err);
+                res.json(team);
+            });
         });
-
-        let team = new Team();
-        team.name = req.body.name;
-        team.players = [];
-
-        team.save(err => {
-            if (err)
-                res.send(err);
-
-            res.json(team);
-        });
-
     })
     .get((req, res) => {
         Team.find((err, teams) => {
