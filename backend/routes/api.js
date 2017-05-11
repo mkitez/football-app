@@ -10,7 +10,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/fbdb'); // this is for local launch
 // mongoose.connect('mongodb://database/fbdb'); // this is for Docker launch
 
 let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Failed to connect to DB.'));
+db.on('error', () => {
+    console.error('Failed to connnect to DB. Exiting...');
+    process.exit(1);
+});
 db.once('open', console.log.bind(console, 'Connection to DB established.'));
 
 const jwt = require('jsonwebtoken');
