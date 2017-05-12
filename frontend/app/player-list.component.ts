@@ -89,7 +89,8 @@ export class PlayerListComponent implements OnInit {
             .then(player => {
                 this.players.push(player);
                 this.selectedPlayer = null;
-            });
+            })
+            .catch(error => alert(error.json().message));
     }
 
     delete(player: Player): void {

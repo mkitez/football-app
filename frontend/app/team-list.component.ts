@@ -80,7 +80,8 @@ export class TeamListComponent implements OnInit {
             .then(team => {
                 this.teams.push(team);
                 this.selectedTeam = null;
-            });
+            })
+            .catch(error => alert(error.json().message));
     }
 
     delete(team: Team): void {
