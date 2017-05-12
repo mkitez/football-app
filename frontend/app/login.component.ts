@@ -9,23 +9,19 @@ contentHeaders.append('Content-Type', 'application/json');
 
 @Component({
   selector: 'login',
-  template: `<div>
-    <h2>Login</h2>
-    <form role="form" (submit)="login($event, username.value, password.value)">
-      <div>
+  template: `
+    <form role="form" class="form-signin" (submit)="login($event, username.value, password.value)">
+      <h2 class="form-signin-heading">Login</h2>
+      <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" #username class="form-control" id="username" placeholder="Username">
+        <input type="text" #username class="form-control" id="username" placeholder="Username" autofocus>
       </div>
-      <div>
+      <div class="form-group">
         <label for="password">Password</label>
         <input type="password" #password class="form-control" id="password" placeholder="Password">
       </div>
-      <button type="submit">Submit</button>
-    </form>
-  </div>`,
-  styles: [ `.login {
-    width: 40%;
-  }` ]
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>`
 })
 
 export class LoginComponent implements OnInit {

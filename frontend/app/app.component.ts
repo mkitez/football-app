@@ -3,10 +3,9 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'my-app',
   template: `
-    <h1>{{title}}</h1>
-    <router-outlet></router-outlet>`
+    <div class="container">
+    <router-outlet></router-outlet>
+    </div>`
 })
 
-export class AppComponent {
-  title = 'Football Project';
-}
+export class AppComponent { }

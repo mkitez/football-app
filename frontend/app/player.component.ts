@@ -7,12 +7,22 @@ import { Player } from './player';
 
 @Component({
     selector: 'player-detail',
-    template: `<div *ngIf="player">      
-    <h2>Player Details</h2>
-    <p>id: {{player.id}}<br>
-    name: {{player.name}}</p>
-    <button (click)="goBack()">Back</button>
-    </div>`
+    template: `
+    <div class="page-header">
+        <h2>Player Details</h2>
+    </div>
+    <div *ngIf="!player">
+        <p>No player with this ID.</p>
+    </div>
+    <div *ngIf="player">
+        <dl class="dl-horizontal">
+            <dt>ID:</dt><dd>{{player.id}}</dd>
+            <dt>Name:</dt><dd>{{player.name}}</dd>
+        </dl>
+    </div>
+    <button type="button" class="btn btn-link pull-right" (click)="goBack()">
+        Back
+    </button>`
 })
 
 export class PlayerComponent implements OnInit {

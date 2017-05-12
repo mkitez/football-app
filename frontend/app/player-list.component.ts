@@ -8,31 +8,45 @@ import { JwtHelper } from 'angular2-jwt';
 
 @Component({
     selector: 'my-players',
-    template: `<h2>List of Players</h2>
-    <div *ngIf="isAdmin">
-      <label>Add player:</label> <input #playerName />
-      <button (click)="add(playerName.value); playerName.value=''">
-        Add
-      </button>
+    template: `
+    <div class="page-header">
+        <h2>List of Players</h2>
+    </div>
+    <div *ngIf="isAdmin" class="row">
+    <div class="col-lg-6">
+      <label>Add player:</label>
+      <div class="input-group">
+      <input #playerName type="text" class="form-control" placeholder="Enter player name...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button"
+                (click)="add(playerName.value); playerName.value=''">
+                Add
+        </button>
+      </span>
+      </div>
+    </div>
     </div>
     <div *ngIf="!players.length">
         <p>There are no players in the team.</p>
     </div>
-    <ul>
-    <li *ngFor='let player of players'
-        class="selectable"
-        [class.selected]="player === selectedPlayer"
-        (click)="onSelect(player)">
-        {{player.id}}: {{player.name}}
-        <button *ngIf="isAdmin" (click)="delete(player); $event.stopPropagation()">X</button>
-    </li>
-    </ul>
-    <button (click)="goBack()">Back</button>
-    <button (click)="gotoDetail(selectedPlayer)">View Details</button>`,
-    styles: [`
-        .selected { font-weight: bold; }
-        .selectable { cursor: pointer; }
-    `]
+    <div class="teams list-group">
+        <a *ngFor="let player of players"
+            class="list-group-item"
+            [class.active]="player === selectedPlayer"
+            (click)="onSelect(player); $event.stopPropagation()">
+            <strong>{{player.id}}:</strong> {{player.name}}
+            <button type="button" class="btn btn-danger btn-xs pull-right"
+                    *ngIf="isAdmin" (click)="delete(player); $event.stopPropagation()">
+                    delete
+            </button>
+        </a>
+    </div>
+    <button *ngIf="selectedPlayer"
+            type="button" class="btn btn-primary"
+            (click)="gotoDetail(selectedPlayer)">
+            View Details
+    </button>
+    <button type="button" class="btn btn-link pull-right" (click)="goBack()">Back</button>`
 })
 
 export class PlayerListComponent implements OnInit {

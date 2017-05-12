@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
-import {Http, HttpModule, RequestOptions} from '@angular/http';
+import { Http, HttpModule, RequestOptions } from '@angular/http';
 
 import { TeamService } from './team.service';
 import { TeamListComponent } from './team-list.component';
@@ -10,7 +10,7 @@ import { PlayerListComponent } from './player-list.component';
 import { PlayerComponent } from './player.component';
 import { LoginComponent } from './login.component';
 import { AuthGuard } from './auth-guard.service';
-import {AuthConfig, AuthHttp } from 'angular2-jwt';
+import { AuthConfig, AuthHttp } from 'angular2-jwt';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({

@@ -8,35 +8,45 @@ import { JwtHelper } from 'angular2-jwt';
 @Component({
     selector: 'my-teams',
     template: `
-    <h2>List of Teams</h2>
-    <div *ngIf="isAdmin">
-      <label>Add team:</label> <input #teamName />
-      <button (click)="add(teamName.value); teamName.value=''">
-        Add
-      </button>
+    <div class="page-header">
+        <h2>List of Teams</h2>
+    </div>
+    <div *ngIf="isAdmin" class="row">
+    <div class="col-lg-6">
+        <label>Add team:</label>
+        <div class="input-group">
+        <input #teamName type="text" class="form-control" placeholder="Enter team name...">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button"
+                    (click)="add(teamName.value); teamName.value=''">
+                    Add
+            </button>
+        </span>
+        </div>
+    </div>
     </div>
     <div *ngIf="!teams.length">
       <p>There are no teams yet.</p>
     </div>
-    <ul class='teams'>
-        <li *ngFor='let team of teams'
-            class="selectable"
-            [class.selected]="team === selectedTeam"
-            (click)="onSelect(team)">
+    <div class="teams list-group">
+        <a *ngFor="let team of teams"
+            class="list-group-item"
+            [class.active]="team === selectedTeam"
+            (click)="onSelect(team); $event.stopPropagation()">
             {{team.name}}
-            <button *ngIf="isAdmin" (click)="delete(team); $event.stopPropagation()">X</button>
-        </li>
-    </ul>
-    <div *ngIf="selectedTeam">
-        <button (click)="gotoDetail(selectedTeam)">View Details</button>
+            <button type="button" class="btn btn-danger btn-xs pull-right"
+                    *ngIf="isAdmin"
+                    (click)="delete(team); $event.stopPropagation()">
+                    delete
+            </button>
+        </a>
     </div>
-    <div>
-        <button (click)="logout()">Logout</button>
-    </div>`,
-    styles: [`
-        .selected { font-weight: bold; }
-        .selectable { cursor: pointer; }
-    `]
+    <button *ngIf="selectedTeam"
+            type="button" class="btn btn-primary"
+            (click)="gotoDetail(selectedTeam)">
+            View Details
+    </button>
+    <button type="button" class="btn btn-link pull-right" (click)="logout()">Logout</button>`
 })
 
 export class TeamListComponent implements OnInit {
