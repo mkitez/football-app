@@ -1,6 +1,7 @@
 # Football Teams App
 
 This project is implemented as a test task demonstrating usage of AngularJS 2, NodeJS, Express API and MongoDB (MEAN stack).
+
 Features:
 * RESTful API
 * Authorization
@@ -15,5 +16,4 @@ Before using this app, you'll need to set up a MongoDB server on your localhost.
 ### Build
 
 Clone the repo to your local directory and run the commands:
-`npm install
-npm run start`
+`npm install` and `npm run start`
