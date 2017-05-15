@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
   constructor(public router: Router, public http: Http) { }
 
   ngOnInit(): void {
-      if (tokenNotExpired()) {
+      if (tokenNotExpired('id_token')) {
           this.router.navigate(['teams']);
       }
   }
